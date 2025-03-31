@@ -1,0 +1,204 @@
+# Wolfram JS Frontend container
+*contributed by [@yloose](https://github.com/yloose)*
+
+## Description
+A docker container for the [Wolfram JS Frontend](https://github.com/JerryI/wolfram-js-frontend) project is provided here. The image is based on the on the [Wolfram Engine](https://hub.docker.com/r/wolframresearch/wolframengine) docker image to provide wolframscript.
+
+## Getting Started
+
+1. Make sure you have either installed [docker](https://docs.docker.com/engine/install/) or [podman](https://podman.io/get-started) on your machine.
+
+2. Register at the [Wolfram Engine download page](https://www.wolfram.com/engine/). Click to download (only needed to be redirected to the right place) and then follow the `Get your license` instructions. Register on the next page and acquire the license (it is free). A confirmation message will be sent to your email address. Please follow the link received by email.
+
+3. Start the container (*not by a superuser*):
+    For example
+
+    ```bash
+    docker run -it \
+      -v ~/wljs:"/home/wljs/WLJS Notebooks" \
+      -v ~/wljs/Licensing:/home/wljs/.WolframEngine/Licensing \
+      -e PUID=$(id -u) \
+      -e PGID=$(id -g) \
+      -p 8080:3000 \
+      --name wljs \
+      ghcr.io/jerryi/wolfram-js-frontend:main
+    ```
+
+    You will now be prompted for your Wolfram login information, enter it and wait for the message `Open your browser at http://...`. You can now safely detach from the container using <kbd>Ctrl</kbd>+<kbd>p</kbd> <kbd>Ctrl</kbd>+<kbd>q</kbd> and close your terminal.
+
+    !Note that a local folder (~/wljs) __folder will be mounted__ to the container.
+
+    To start container again run
+
+    ```bash
+    docker start -ai wljs
+    ```
+
+4. Open a web browser at
+
+        http://127.0.0.1:8080
+
+You may change port mapping in the starting sequence.
+
+
+
+## Features
+
+The container is capable of following features:
+
+- The container aggreggates the http and 2 websockets ports into one port
+- An external working directory `~wljs` will be mounted inside the container default wljs notebooks directory.
+- The container allows specifying the `PUID` and `PGID` environment variables to set the user id and group id of the user accessing the `/workspace` directory. Both default to 1000.
+- A volume or bind mount can be used at `~/wljs/Licensing` inside the container to persist licensing information and `~/wljs/` as a user's default directory.
+- To first activate the container you can either start it in interactive mode like shown in the Getting Started section or use environment variables. Use `WOLFRAMID_USERNAME` for the email belonging to the Wolfram Account and `WOLFRAMID_PASSWORD` for the corresponding password. The environment variables only have to be passed on first use. For example
+
+```bash
+docker run -it \
+  -v ~/wljs:"/home/wljs/WLJS Notebooks" \
+  -v ~/wljs/Licensing:/home/wljs/.WolframEngine/Licensing \
+  -e PUID=$(id -u) \
+  -e PGID=$(id -g) \
+  -e WOLFRAMID_USERNAME=your@email.com \
+  -e WOLFRAMID_PASSWORD=password \
+  -p 8080:3000 \
+  --name wljs \
+  ghcr.io/jerryi/wolfram-js-frontend:main
+```
+
+## Persistent storage for WLJS configuration
+Use named volume to store your configuration, settings and packages updates. Mount `/wljs` path inside the container, for instance
+
+```bash
+docker run -it \
+  -v wljs_data:/wljs \
+  -v ~/wljs:"/home/wljs/WLJS Notebooks" \
+  -v ~/wljs/Licensing:/home/wljs/.WolframEngine/Licensing \
+  -e PUID=$(id -u) \
+  -e PGID=$(id -g) \
+  -p 8080:3000 \
+  --name wljs \
+  ghcr.io/jerryi/wolfram-js-frontend:main
+```
+
+***Note***
+To update WLJS Notebook image, please, remove named volume `wljs_data` as well. Otherwise some packages may appear to be outdated
+
+## Running as root
+Change the mounting directories
+
+```bash
+docker run -it \
+  -v wljs_data:/wljs \
+  -v ~/wljs:"/root/WLJS Notebooks" \
+  -v ~/wljs/Licensing:/root/.WolframEngine/Licensing \
+  -e PUID=$(id -u) \
+  -e PGID=$(id -g) \
+  -p 8080:3000 \
+  --name wljs \
+  ghcr.io/jerryi/wolfram-js-frontend:main
+```
+
+## NGINX Proxy
+The container also includes a nginx proxy running by default. This aggreggates the http and websockets ports into one port at 3000 (inside the container). It also makes it possible to further reverse proxy the application and add TLS encryption
+
+### TLS proxy config
+
+To run the container behind a reverse proxy to add TLS support, a minimal nginx configuration similiar to this one could be used:
+
+```
+server {
+    listen 80;
+    server_name wljs.example.com;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name wljs.example.com;
+    
+    ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+    ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+
+    set $upstream http://<container_host>:3000;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "keep-alive, upgrade";
+
+        proxy_pass $upstream;
+    }
+}
+
+```
+
+Make sure to change port mapping from `80:3000` to `3000:3000` in the starting sequence if you start nginx TLS proxy outside the container
+
+### Basic Authentication
+*We do recommend to set this if you plan to access it from the public IP*
+
+1. Following [the guide](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/) we install a simple util to generate login data
+
+```bash
+sudo apt install apache2-utils
+```
+
+then generate user and password
+
+```bash
+sudo htpasswd -c /etc/apache2/.htpasswd user1
+```
+
+2. Now set up NGIX proxy
+
+```bash
+nano /etc/nginx/sites-available/default
+```
+
+```nginx
+server {
+    listen 80; 
+    server_name mydomain.io;
+
+    auth_basic           "WLJS Notebook";
+    auth_basic_user_file /etc/apache2/.htpasswd;
+
+    set $upstream http://127.0.0.1:3000;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "keep-alive, upgrade";
+
+        proxy_pass $upstream;
+    }
+}
+```
+
+Restart nginx.
+
+3. Set up the container
+
+```bash
+docker run -it \
+  -v wljs_data:/wljs \
+  -v ~/wljs:"/home/wljs/WLJS Notebooks" \
+  -v ~/wljs/Licensing:/home/wljs/.WolframEngine/Licensing \
+  -e PUID=$(id -u) \
+  -e PGID=$(id -g) \
+  -p "127.0.0.1:3000:3000" \
+  --name wljs \
+  ghcr.io/jerryi/wolfram-js-frontend:main
+```
+
+
+
+
+## Known Issues
+
+- Offline offline documentation is not available

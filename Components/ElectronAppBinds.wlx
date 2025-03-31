@@ -1,0 +1,33 @@
+Controls = $Options["Controls"];
+
+<script type="module">
+    const api = window.electronAPI || window.iframeAPI;
+    if (api) {
+        api.listener('extension', (ev, pattern) => {
+            server.emitt('<Controls/>', 'True', pattern);
+        });
+        api.listener('context', (ev, pattern) => {
+            server.emitt('<Controls/>', 'True', pattern);
+        });     
+        api.listener('settings', (ev, pattern) => {
+            open('/settings', '_blank');
+        });    
+        api.listener('newnotebook', () => {
+            console.log('note');
+            server.emitt('<Controls/>', 'True', '_NewNotebook');
+        });
+
+        api.listener('acknowledgments', () => {
+            open('/acknowledgments', '_blank');
+        });
+
+        api.listener('checkupdates', (ev) => {
+            server.emitt('<Controls/>', `True`, 'CheckUpdates');
+        });
+        
+
+        api.listener('newshortnote', () => {
+            server.emitt('<Controls/>', 'True', '_NewQuickNotebook');
+        });     
+    }
+</script>

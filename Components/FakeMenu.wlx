@@ -1,0 +1,291 @@
+
+Component[OptionsPattern[]] := With[{
+  Plugins = Join[<|"view"->{}, "misc"->{}, "edit"->{}, "file"->{}|>, OptionValue["Plugins"]],
+  Controls = OptionValue["Controls"],
+  Class = OptionValue["Class"],
+  Style = OptionValue["Style"]
+},
+  With[{LayoutFile = 
+  {
+    <div class="py-0 px-2" role="none">     
+        <button data-name="newshort" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          New notebook
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Ctrl+N</kbd></span>
+        </button>  
+        <button data-name="openFile" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          Open File
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Ctrl+O</kbd></span>
+        </button> 
+    </div>
+  ,
+    <div class="py-0 px-2" role="none">        
+        <button data-name="new" class="block w-full text-left  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          New note in folder
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Ctrl+Shift+N</kbd></span>
+        </button> 
+        <button data-name="prompt" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          Prompt
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Alt+Shift+Space</kbd></span>
+        </button> 
+    
+        <button data-name="openFolder" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          Open Folder
+        </button>        
+    </div>
+
+    ,
+      Table[ With[{event = Vi["event"], Label = Vi["label"]},
+      <div class="py-0 px-2" role="none">     
+        <button data-ctl="true" data-name="{event}" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          <Label/>
+        </button>          
+      </div>        
+      ], {Vi, Plugins["file"]}]
+    ,
+    <div class="py-0 px-2" role="none">
+      <button data-name="Save" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+        Save
+        <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Ctrl+S</kbd></span>
+      </button>
+      <button data-name="SaveAs" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Save As
+      </button>          
+    </div>
+,   
+      <div class="py-0 px-2" role="none">
+        <button data-name="locateExamples" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+       
+          Locate Examples
+        </button>
+        <button data-name="locateAppData" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+   
+          Locate AppData
+        </button> 
+        <button data-name="checkupdates" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+   
+          Check updates
+        </button>               
+      </div>
+      
+    ,  
+     <div class="py-0 px-2" role="none">
+       <button data-name="OpenSettings" data-ctl="true" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+         Settings
+       </button> 
+      </div>
+    ,
+      <div class="py-0 px-2" role="none">
+        <button data-name="acknowledgments" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          Acknowledgments
+        </button> 
+      </div>
+      
+    ,
+    <div class="py-0 px-2" role="none">
+      <button data-name="quickmode" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+        Open as quick note
+      </button>          
+      <button data-name="browser" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+  
+        Open in browser
+      </button>            
+      <button data-name="exit" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Exit
+      </button>
+    </div>  
+
+  } // Flatten
+,
+LayoutView = 
+  {
+      Table[ With[{event = Vi["event"], Label = Vi["label"]},
+      <div class="py-0 px-2" role="none">     
+        <button data-ctl="true" data-name="{event}" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          <Label/>
+        </button>          
+      </div>        
+      ], {Vi, Join[Plugins["view"], {}]}]
+    ,
+    <div class="py-0 px-2" role="none">
+      <button data-name="reload" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Reload page
+      </button>
+      <button data-name="OnTop" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Always on top
+      </button>      
+    </div>
+      
+    ,
+      <div class="py-0 px-2" role="none"> 
+        <button data-name="togglecells" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+    
+          Show/Hide cell
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Alt+2</kbd></span>
+        </button>                     
+        <button data-name="clearoutputs" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+    
+          Clear outputs
+          <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Alt+U</kbd></span>
+        </button>
+      </div> 
+    ,    
+      Table[ With[{event = Vi["event"], Label = Vi["label"]},
+      <div class="py-0 px-2" role="none">     
+        <button data-ctl="true" data-name="{event}" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          <Label/>
+        </button>          
+      </div>        
+      ], {Vi, Join[Plugins["edit"], {}]}]
+    ,
+    <div class="py-0 px-2" role="none">
+      <button data-name="zoomIn" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Zoom in
+        
+      </button>
+      <button data-name="zoomOut" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Zoom out
+      </button>      
+    </div>
+  
+  } // Flatten
+,
+LayoutEvaluation = {
+  <div class="py-0 px-2" role="none">
+    <button data-name="abort" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+      Abort
+      <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Alt+.</kbd></span>
+    </button>
+    <button data-name="evalInit" class="block text-left w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+      Evaluate initialization cells
+      <span class="ml-auto flex-none text-xs  text-gray-400"><kbd class="font-sans">Alt+I</kbd></span>
+    </button> 
+  </div>
+,
+    
+    
+    <div class="py-0 px-2" role="none">
+      <button data-name="newlocalkernel" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+       New Kernel
+        
+      </button>    
+      <button data-name="restartkernels" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Restart Kernel
+        
+      </button>
+      <button data-name="shutdownall" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+
+        Shutdown all 
+      </button>      
+    </div>
+
+} // Flatten
+,
+LayoutMisc = 
+  {
+   
+      Table[ With[{event = Vi["event"], Label = Vi["label"]},
+      <div class="py-0 px-2" role="none">     
+        <button data-ctl="true" data-name="{event}" class="block w-full  text-black group flex items-center px-1 my-1 py-1 rounded text-sm leading-4 dark:text-gray-400" role="menuitem" tabindex="-1">
+          <Label/>
+        </button>          
+      </div>        
+      ], {Vi, Join[Plugins["misc"], {}]}]
+  } // Flatten
+},
+
+    <div class="h-titlebar flex {Class}" style="-webkit-app-region:none">
+        <div class="mr-auto pr-4 flex gap-x-1 text-sm" style="{Style}">
+            <button id="fake-menu-file" class="text-gray-500 hover:text-black dark:hover:text-white rounded-md px-2 h-6 win:ml-0 owin:ml-0 linux:ml-0">
+                File
+            </button>
+
+            <button id="fake-menu-view" class="text-gray-500 hover:text-black dark:hover:text-white rounded-md px-2 h-6 win:ml-0 owin:ml-0 linux:ml-0">
+                View
+            </button>
+
+            <button id="fake-menu-evaluation" class="text-gray-500 hover:text-black dark:hover:text-white rounded-md px-2 h-6 win:ml-0 owin:ml-0 linux:ml-0">
+                Evaluation
+            </button>            
+
+            <button id="fake-menu-misc" class="text-gray-500 hover:text-black dark:hover:text-white rounded-md px-2 h-6 win:ml-0 owin:ml-0 linux:ml-0">
+                Misc
+            </button>
+
+        </div>
+        <div class="grow h-full" style="-webkit-app-region: drag;"></div>
+        <div id="dropdown-fake-file" class="hidden sc-b absolute right-0 z-10 mt-6 w-56 origin-top-right divide-y divide-gray-400 dark:divide-gray-700 overflow-y-scroll rounded backdrop-blur-xl bg-white/90 drop-shadow-xl outline outline-gray-300 outline-offset-0 outline-1 text-gray-800 dark:bg-gray-800 dark:outline-gray-700" style="top:0.4rem; left:0.5rem; max-height: 90vh" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <LayoutFile/>
+        </div>  
+        <div id="dropdown-fake-view" class="hidden sc-b absolute right-0 z-10 mt-6 w-56 origin-top-right divide-y divide-gray-400 dark:divide-gray-700 overflow-y-scroll rounded backdrop-blur-xl bg-white/90 drop-shadow-xl outline outline-gray-300 outline-offset-0 outline-1 text-gray-800 dark:bg-gray-800 dark:outline-gray-700" style="top:0.4rem; left:0.5rem; max-height: 90vh" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <LayoutView/>
+        </div> 
+        <div id="dropdown-fake-evaluation" class="hidden sc-b absolute right-0 z-10 mt-6 w-56 origin-top-right divide-y divide-gray-400 dark:divide-gray-700 overflow-y-scroll rounded backdrop-blur-xl bg-white/90 drop-shadow-xl outline outline-gray-300 outline-offset-0 outline-1 text-gray-800 dark:bg-gray-800 dark:outline-gray-700" style="top:0.4rem; left:0.5rem; max-height: 90vh" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <LayoutEvaluation/>
+        </div>        
+        <div id="dropdown-fake-misc" class="hidden sc-b absolute right-0 z-10 mt-6 w-56 origin-top-right divide-y divide-gray-400 dark:divide-gray-700 overflow-y-scroll rounded backdrop-blur-xl bg-white/90 drop-shadow-xl outline outline-gray-300 outline-offset-0 outline-1 text-gray-800 dark:bg-gray-800 dark:outline-gray-700" style="top:0.4rem; left:0.5rem; max-height: 90vh" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <LayoutMisc/>
+        </div>                 
+        <script type="module">
+          const exts = ['file', 'view', 'evaluation', 'misc'];
+          for (const ext of exts) {
+               const holder = document.getElementById('dropdown-fake-'+ext);
+
+
+                const close = () => {
+                    holder.classList.add('hidden');
+                    window.removeEventListener('click', close);
+                }
+
+                const buttons = holder.getElementsByTagName('button');
+
+                for (let i=0; i<buttons.length; i++) {
+                    const el = buttons[i];
+                    if (el.dataset.ctl) {
+                      el.addEventListener('click', () => {
+                        server.emitt('<Controls/>', 'True', el.dataset.name)
+                      });                      
+                      continue;
+                    }
+                    el.addEventListener('click', () => {
+                      window.electronAPI.topMenu(el.dataset.name);
+                    });
+                }
+
+                const spawn = () => {
+                
+                    holder.classList.remove('hidden');
+                
+                    //const placeholder = document.getElementById('dropdown-holder-'+uid).getBoundingClientRect();
+                    //console.log(placeholder);
+                    //holder.style.top = - 25 + placeholder.bottom + 'px';
+                    //holder.style.right = (window.innerWidth - placeholder.right) + 'px';
+                    //e.preventDefault();
+                    //e.stopPropagation();
+                    setTimeout(() => {
+                        window.addEventListener('click', close);        
+                    }, 40);
+                };   
+
+                const hamburger = document.getElementById('fake-menu-'+ext);
+                hamburger.addEventListener('click', spawn);
+          }
+      </script>              
+    </div>
+
+  ]]
+
+
+Options[Component] = {"Plugins"-><||>, "Controls"->"", "Style" -> "", "Class" -> "p-1 pr-2"}
+
+Component
+

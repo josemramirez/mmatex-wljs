@@ -1,0 +1,27 @@
+# fly.toml app configuration file generated for mmatex-note on 2025-03-30T17:56:59-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'mmatex-note'
+primary_region = 'fra'
+
+[build]
+  image = 'ghcr.io/jerryi/wolfram-js-frontend:main'
+
+[env]
+  PGID = ''
+  PUID = ''
+  WOLFRAMID_PASSWORD = 'Kuke3nan_wolfram?'
+  WOLFRAMID_USERNAME = 'dronesai.peiskos@gmail.com'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  size = 'performance-16x'
